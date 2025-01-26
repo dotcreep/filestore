@@ -1,5 +1,8 @@
 files/
-.env
+config.yml
+config.yaml
 file.db
 filestore
-vendor/
+bin/main
+bin/filestore
+Makefile.bak

@@ -1,0 +1,9 @@
+---
+config:
+  secret_access: secrettoken
+  key_access_metadata: sample-xvCudPKjRDJVC7rRM9QCbJoTRr2hUPtFSyW9mkHxNV7WAmdQySALifjQVbQDtEiqivJ7VZnKAVsSRunby7mVAQ
+  port: 9091
+  storage_path: files
+  db_name: file.db
+  migration_path: migrations # dummy
+  ui: false # dummy

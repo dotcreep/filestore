@@ -1,4 +1,4 @@
-package config
+package utils
 
 import (
 	"log"
@@ -6,15 +6,15 @@ import (
 )
 
 func InitStorage() {
-	var storagePath string
-	err := os.Getenv("STORAGE_PATH")
-	if err == "" {
-		log.Fatal(err)
+	cfg, err := OpenYAML()
+	if err != nil {
+		log.Println(err)
+		return
 	}
-	storagePath = os.Getenv("STORAGE_PATH")
+	storagePath := cfg.Config.StoragePath
 	if _, err := os.Stat(storagePath); os.IsNotExist(err) {
 		if err := os.MkdirAll(storagePath, 0755); err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}
 }
