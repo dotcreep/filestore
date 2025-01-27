@@ -22,10 +22,6 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		Json.NewResponse(false, w, nil, "internal server error", http.StatusInternalServerError, err.Error())
 		return
 	}
-	if r.Method != http.MethodPost {
-		Json.NewResponse(false, w, nil, "method not allowed", http.StatusMethodNotAllowed, nil)
-		return
-	}
 
 	storagePath := cfg.Config.StoragePath
 	if storagePath == "" {
@@ -41,9 +37,9 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	packageName := r.URL.Query().Get("id")
+	packageName := r.FormValue("id")
 	if packageName == "" {
-		Json.NewResponse(false, w, nil, "query id is required", http.StatusBadRequest, "no package name")
+		Json.NewResponse(false, w, nil, "app id is required", http.StatusBadRequest, "no package name")
 		return
 	}
 

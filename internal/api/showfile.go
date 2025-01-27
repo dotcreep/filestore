@@ -21,7 +21,7 @@ type FileData struct {
 	Index       int    `json:"index"`
 	Filename    string `json:"filename"`
 	URL         string `json:"url"`
-	UploadURL   string `json:"upload_url"`
+	UploadAt    string `json:"upload_at"`
 	PackageName string `json:"package_name"`
 }
 
@@ -40,12 +40,13 @@ func findFilenameViaStorage(userId string) (string, error) {
 
 func ShowFile(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
-	if r.Method != http.MethodGet {
-		Json.NewResponse(false, w, nil, "method not allowed", http.StatusMethodNotAllowed, nil)
+	cfg, err := utils.OpenYAML()
+	if err != nil {
+		Json.NewResponse(false, w, nil, "internal server error", http.StatusInternalServerError, err.Error())
 		return
 	}
 	parts := strings.Split(r.URL.Path, "/")
-	userId := parts[5]
+	userId := parts[4]
 	dirs, err := findFilenameViaStorage(userId)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -61,13 +62,7 @@ func ShowFile(w http.ResponseWriter, r *http.Request) {
 		Json.NewResponse(false, w, nil, "failed to get directory", http.StatusInternalServerError, err.Error())
 		return
 	}
-	dbName := "./file.db"
-	db, err := sql.Open("sqlite3", dbName)
-	if err != nil {
-		Json.NewResponse(false, w, nil, "failed to open database", http.StatusInternalServerError, err.Error())
-		return
-	}
-	defer db.Close()
+
 	data := &Data{
 		AAB: make(map[string]FileData),
 		APK: make(map[string]FileData),
@@ -80,7 +75,7 @@ func ShowFile(w http.ResponseWriter, r *http.Request) {
 				Json.NewResponse(false, w, nil, "failed to get file extension", http.StatusInternalServerError, nil)
 				return
 			}
-			dbName := "./file.db"
+			dbName := cfg.Config.DBName
 			db, err := sql.Open("sqlite3", dbName)
 			if err != nil {
 				Json.NewResponse(false, w, nil, "failed to open database", http.StatusInternalServerError, err.Error())
@@ -147,7 +142,7 @@ func ShowFile(w http.ResponseWriter, r *http.Request) {
 				Index:       index,
 				Filename:    fileName,
 				URL:         fmt.Sprintf("/%s/%s", userId, hashStr),
-				UploadURL:   uploadDate,
+				UploadAt:    uploadDate,
 				PackageName: pkgName,
 			}
 

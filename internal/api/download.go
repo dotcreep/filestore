@@ -54,10 +54,6 @@ func Download(w http.ResponseWriter, r *http.Request) {
 		Json.NewResponse(false, w, nil, "internal server error", http.StatusInternalServerError, err.Error())
 		return
 	}
-	if r.Method != http.MethodGet {
-		Json.NewResponse(false, w, nil, "method not allowed", http.StatusMethodNotAllowed, nil)
-		return
-	}
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 4 {
 		Json.NewResponse(false, w, nil, "invalid url", http.StatusBadRequest, nil)

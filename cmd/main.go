@@ -49,8 +49,10 @@ func main() {
 	})
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Use(handler.Middleware)
-		r.Get("/app/list/{userId}", api.ShowFile)
+		r.Get("/list/{userId}", api.ShowFile)
 		r.Post("/upload/{userId}", api.Upload)
+		r.Delete("/{userId}/{hash}", api.Delete)
+		r.Delete("/{userId}", api.DeleteByUsername)
 	})
 	r.NotFound(handler.NotFoundHandler)
 	fmt.Printf("Server running on port %d\n", port)
