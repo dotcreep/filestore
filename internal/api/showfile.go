@@ -22,6 +22,8 @@ type FileData struct {
 	Filename    string `json:"filename"`
 	URL         string `json:"url"`
 	UploadAt    string `json:"upload_at"`
+	LabelName   string `json:"label_name"`
+	Version     string `json:"version"`
 	PackageName string `json:"package_name"`
 }
 
@@ -38,6 +40,19 @@ func findFilenameViaStorage(userId string) (string, error) {
 	return userStorage, nil
 }
 
+// @Summary		Show file from user
+// @Description	Show all app list of apk and aab
+// @Tags			File
+// @Accept			json
+// @Produce		json
+//
+// @Param			id	path	string	true	"user id"
+//
+// @Security		X-API-Key
+// @Success		200	{object}	utils.Showfile				"Success"
+// @Failure		400	{object}	utils.BadRequest			"Bad request"
+// @Failure		500	{object}	utils.InternalServerError	"Internal server error"
+// @Router			/api/v1/list/{id} [get]
 func ShowFile(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
 	cfg, err := utils.OpenYAML()
@@ -116,6 +131,28 @@ func ShowFile(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
+			var labelName sql.NullString
+			err = db.QueryRow("SELECT label_name FROM files WHERE user_id = ? AND app_name = ?", userId, filename).Scan(&labelName)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					Json.NewResponse(false, w, nil, "label not found", http.StatusNotFound, err.Error())
+					return
+				} else {
+					Json.NewResponse(false, w, nil, "failed to query label in database", http.StatusInternalServerError, err.Error())
+					return
+				}
+			}
+			var versionApp sql.NullString
+			err = db.QueryRow("SELECT version_app FROM files WHERE user_id = ? AND app_name = ?", userId, filename).Scan(&versionApp)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					Json.NewResponse(false, w, nil, "version not found", http.StatusNotFound, err.Error())
+					return
+				} else {
+					Json.NewResponse(false, w, nil, "failed to query version in database", http.StatusInternalServerError, err.Error())
+					return
+				}
+			}
 			var uploadDate string
 			err = db.QueryRow("SELECT upload_at FROM files WHERE user_id = ? AND app_name = ?", userId, filename).Scan(&uploadDate)
 			if err != nil {
@@ -141,9 +178,11 @@ func ShowFile(w http.ResponseWriter, r *http.Request) {
 			fileData := &FileData{
 				Index:       index,
 				Filename:    fileName,
-				URL:         fmt.Sprintf("/%s/%s", userId, hashStr),
-				UploadAt:    uploadDate,
+				LabelName:   labelName.String,
 				PackageName: pkgName,
+				UploadAt:    uploadDate,
+				URL:         fmt.Sprintf("/%s/%s", userId, hashStr),
+				Version:     versionApp.String,
 			}
 
 			if ext == ".apk" {

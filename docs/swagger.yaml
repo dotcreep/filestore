@@ -1,0 +1,305 @@
+basePath: /
+definitions:
+  api.RequestInput:
+    properties:
+      file:
+        example: file.aab
+        type: string
+      id:
+        example: id.co.example.username
+        type: string
+      label_name:
+        example: Example Apps
+        type: string
+      version_app:
+        example: v1.0.0
+        type: string
+    required:
+    - file
+    - id
+    - label_name
+    - version_app
+    type: object
+  utils.BadRequest:
+    properties:
+      error:
+        example: string
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        example: "null"
+        type: string
+      status:
+        example: 400
+        type: integer
+      success:
+        example: false
+        type: boolean
+    type: object
+  utils.InternalServerError:
+    properties:
+      error:
+        example: message
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        example: "null"
+        type: string
+      status:
+        example: 500
+        type: integer
+      success:
+        example: false
+        type: boolean
+    type: object
+  utils.Showfile:
+    properties:
+      error:
+        example: "null"
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        properties:
+          aab:
+            properties:
+              hash.aab:
+                properties:
+                  filename:
+                    example: file.aab
+                    type: string
+                  index:
+                    example: 1
+                    type: integer
+                  package_name:
+                    example: id.co.example.username
+                    type: string
+                  upload_at:
+                    example: "2025-01-27T22:40:37.773666331+07:00"
+                    type: string
+                  url:
+                    example: /username/hash
+                    type: string
+                type: object
+            type: object
+          apk:
+            properties:
+              hash.apk:
+                properties:
+                  filename:
+                    example: file.apk
+                    type: string
+                  index:
+                    example: 1
+                    type: integer
+                  package_name:
+                    example: id.co.example.username
+                    type: string
+                  upload_at:
+                    example: "2025-01-27T19:44:25.467738468+07:00"
+                    type: string
+                  url:
+                    example: /username/hash
+                    type: string
+                type: object
+            type: object
+        type: object
+      status:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+    type: object
+  utils.Success:
+    properties:
+      error:
+        example: "null"
+        type: string
+      message:
+        example: message
+        type: string
+      result:
+        example: message
+        type: string
+      status:
+        example: 200
+        type: integer
+      success:
+        example: true
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: Documentation for Filestore
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Filestore
+  version: "1.0"
+paths:
+  /api/v1/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user file based on username
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-API-Key: []
+      summary: Delete all file apk or aab and user
+      tags:
+      - File
+  /api/v1/{id}/{hash}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete file based on user id or username using hash
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-API-Key: []
+      summary: Delete file apk or aab
+      tags:
+      - File
+  /api/v1/list/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Show all app list of apk and aab
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Showfile'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-API-Key: []
+      summary: Show file from user
+      tags:
+      - File
+  /api/v1/upload/{username}:
+    post:
+      consumes:
+      - application/json
+      description: Upload file based on user id or username
+      parameters:
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/api.RequestInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/utils.Success'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/utils.BadRequest'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/utils.InternalServerError'
+      security:
+      - X-API-Key: []
+      summary: Upload file apk or aab
+      tags:
+      - File
+  /getfile/{id}/{hash}:
+    get:
+      description: Download file using username and hash when getting from list apk
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      responses: {}
+      summary: Download file
+      tags:
+      - File
+securityDefinitions:
+  X-API-Key:
+    description: Input your token authorized
+    in: header
+    name: X-API-Key
+    type: apiKey
+swagger: "2.0"

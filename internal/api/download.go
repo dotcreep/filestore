@@ -26,27 +26,36 @@ import (
 // 	return filePath, nil
 // }
 
-func findFilename(userId string, hash string) (string, string, error) {
+func findFilename(userId string, hash string) (string, string, string, error) {
 	dbName := "./file.db"
 	db, err := sql.Open("sqlite3", dbName)
 	if err != nil {
-		return "", "", errors.New("failed to open database")
+		return "", "", "", errors.New("failed to open database")
 	}
 	defer db.Close()
 
 	// Gabungkan kedua query menjadi satu
 	var hashFilename, filename string
-	err = db.QueryRow("SELECT app_name, filename FROM files WHERE user_id = ? AND hash = ?", userId, hash).Scan(&hashFilename, &filename)
+	var labelName sql.NullString
+	err = db.QueryRow("SELECT app_name, filename, label_name FROM files WHERE user_id = ? AND hash = ?", userId, hash).Scan(&hashFilename, &filename, &labelName)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "", "", errors.New("file not found")
+			return "", "", "", errors.New("file not found")
 		}
-		return "", "", errors.New("failed to query database")
+		return "", "", "", errors.New("failed to query database")
 	}
-
-	return hashFilename, filename, nil
+	if !labelName.Valid || labelName.String == "" {
+		return hashFilename, filename, "", nil
+	}
+	return hashFilename, filename, labelName.String, nil
 }
 
+// @Summary		Download file
+// @Description	Download file using username and hash when getting from list apk
+// @Tags			File
+// @Param			id		path	string	true	"user id"
+// @Param			hash	path	string	true	"hash"
+// @Router			/getfile/{id}/{hash} [get]
 func Download(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
 	cfg, err := utils.OpenYAML()
@@ -78,7 +87,7 @@ func Download(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// Get from database
-	hashFilename, filename, err := findFilename(userId, hash)
+	hashFilename, filename, labelName, err := findFilename(userId, hash)
 	if err != nil {
 		Json.NewResponse(false, w, nil, "file not found", http.StatusNotFound, err.Error())
 		return
@@ -106,12 +115,27 @@ func Download(w http.ResponseWriter, r *http.Request) {
 	switch ext {
 	case ".apk":
 		contentType = "application/vnd.android.package-archive"
+		if labelName == "" {
+			labelName = filename
+		} else {
+			labelName = fmt.Sprintf("%s.apk", labelName)
+		}
 	case ".aab":
 		contentType = "application/octet-stream"
+		if labelName == "" {
+			labelName = filename
+		} else {
+			labelName = fmt.Sprintf("%s.aab", labelName)
+		}
 	case ".zip":
 		contentType = "application/zip"
+		if labelName == "" {
+			labelName = filename
+		} else {
+			labelName = fmt.Sprintf("%s.zip", labelName)
+		}
 	}
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", labelName))
 	w.Header().Set("Content-Type", contentType)
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", fileSize))
 	_, err = io.Copy(w, file)

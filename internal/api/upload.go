@@ -15,6 +15,25 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type RequestInput struct {
+	File      string `form:"file" json:"file" binding:"required" example:"file.aab"`
+	ID        string `form:"id" json:"id" binding:"required" example:"id.co.example.username"`
+	Version   string `form:"version_app" json:"version_app" binding:"required" example:"v1.0.0"`
+	LabelName string `form:"label_name" json:"label_name" binding:"required" example:"Example Apps" `
+}
+
+// @Summary		Upload file apk or aab
+// @Description	Upload file based on user id or username
+// @Tags			File
+// @Accept			json
+// @Produce		json
+// @Param			username	path	string	true	"username"
+// @Security		X-API-Key
+// @Param			body	body		RequestInput				true	"Body"
+// @Success		200		{object}	utils.Success				"Success"
+// @Failure		400		{object}	utils.BadRequest			"Bad request"
+// @Failure		500		{object}	utils.InternalServerError	"Internal server error"
+// @Router			/api/v1/upload/{username} [post]
 func Upload(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
 	cfg, err := utils.OpenYAML()
@@ -40,6 +59,18 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	packageName := r.FormValue("id")
 	if packageName == "" {
 		Json.NewResponse(false, w, nil, "app id is required", http.StatusBadRequest, "no package name")
+		return
+	}
+
+	labelApp := r.FormValue("label_name")
+	if labelApp == "" {
+		Json.NewResponse(false, w, nil, "label name is required", http.StatusBadRequest, "no label name")
+		return
+	}
+
+	versionApp := r.FormValue("version_app")
+	if versionApp == "" {
+		Json.NewResponse(false, w, nil, "version is required", http.StatusBadRequest, "no version")
 		return
 	}
 
@@ -92,7 +123,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT INTO files (index_app, upload_at, user_id, hash, filename, app_name, package_name, type_app) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO files (index_app, upload_at, user_id, hash, filename, app_name, package_name, type_app, label_name, version_app) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		Json.NewResponse(false, w, nil, "failed to prepare statement", http.StatusInternalServerError, err.Error())
 		return
@@ -161,7 +192,7 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 		Json.NewResponse(false, w, nil, "failed to rename file", http.StatusInternalServerError, errRename.Error())
 		return
 	}
-	_, err = stmt.Exec(index, uploadDate, userId, hashString, filename, hashApp, pkgName, fileTypeExt)
+	_, err = stmt.Exec(index, uploadDate, userId, hashString, filename, hashApp, pkgName, fileTypeExt, labelApp, versionApp)
 	if err != nil {
 		Json.NewResponse(false, w, nil, "failed to insert file into database", http.StatusInternalServerError, err.Error())
 		return

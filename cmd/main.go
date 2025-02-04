@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	_ "github.com/dotcreep/filestore/docs"
 	"github.com/dotcreep/filestore/internal/api"
 	"github.com/dotcreep/filestore/internal/db"
 	"github.com/dotcreep/filestore/internal/service/handler"
@@ -12,8 +13,19 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	_ "github.com/mattn/go-sqlite3"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// @title						Filestore
+// @version					1.0
+// @description				Documentation for Filestore
+// @license.name				MIT
+// @license.url				https://opensource.org/licenses/MIT
+// @BasePath					/
+// @SecurityDefinitions.apikey	X-API-Key
+// @name						X-API-Key
+// @in							header
+// @description				Input your token authorized
 func main() {
 	cfg, err := utils.OpenYAML()
 	if err != nil {
@@ -54,6 +66,7 @@ func main() {
 		r.Delete("/{userId}/{hash}", api.Delete)
 		r.Delete("/{userId}", api.DeleteByUsername)
 	})
+	r.Get("/docs/*", httpSwagger.WrapHandler)
 	r.NotFound(handler.NotFoundHandler)
 	fmt.Printf("Server running on port %d\n", port)
 	log.Println(http.ListenAndServe(fmt.Sprintf(":%d", port), r))
