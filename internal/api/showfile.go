@@ -13,18 +13,8 @@ import (
 )
 
 type Data struct {
-	AAB map[string]FileData `json:"aab"`
-	APK map[string]FileData `json:"apk"`
-}
-
-type FileData struct {
-	Index       int    `json:"index"`
-	Filename    string `json:"filename"`
-	URL         string `json:"url"`
-	UploadAt    string `json:"upload_at"`
-	LabelName   string `json:"label_name"`
-	Version     string `json:"version"`
-	PackageName string `json:"package_name"`
+	AAB map[string]utils.FileData `json:"aab"`
+	APK map[string]utils.FileData `json:"apk"`
 }
 
 func findFilenameViaStorage(userId string) (string, error) {
@@ -79,8 +69,8 @@ func ShowFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := &Data{
-		AAB: make(map[string]FileData),
-		APK: make(map[string]FileData),
+		AAB: make(map[string]utils.FileData),
+		APK: make(map[string]utils.FileData),
 	}
 	for _, f := range dir {
 		if f.Type().IsRegular() {
@@ -98,7 +88,6 @@ func ShowFile(w http.ResponseWriter, r *http.Request) {
 			}
 			defer db.Close()
 			var fileName string
-			fmt.Println(userId, filename)
 			err = db.QueryRow("SELECT filename FROM files WHERE user_id = ? AND app_name = ?", userId, filename).Scan(&fileName)
 			if err != nil {
 				if err == sql.ErrNoRows {
@@ -175,7 +164,7 @@ func ShowFile(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
-			fileData := &FileData{
+			fileData := &utils.FileData{
 				Index:       index,
 				Filename:    fileName,
 				LabelName:   labelName.String,

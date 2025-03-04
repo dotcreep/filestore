@@ -7,7 +7,7 @@ import (
 
 	_ "github.com/dotcreep/filestore/docs"
 	"github.com/dotcreep/filestore/internal/api"
-	"github.com/dotcreep/filestore/internal/db"
+	database "github.com/dotcreep/filestore/internal/db"
 	"github.com/dotcreep/filestore/internal/service/handler"
 	"github.com/dotcreep/filestore/internal/utils"
 	"github.com/go-chi/chi/v5"
@@ -42,7 +42,7 @@ func main() {
 		log.Printf("Warning: DBName is not set in config file, make default %s\n", cfg.Config.DBName)
 	}
 
-	err = db.Migration()
+	err = database.Migration()
 	if err != nil {
 		log.Println(err)
 	}
@@ -63,6 +63,9 @@ func main() {
 		r.Use(handler.Middleware)
 		r.Get("/list/{userId}", api.ShowFile)
 		r.Post("/upload/{userId}", api.Upload)
+	})
+	r.Route("/api/v1/admin", func(r chi.Router) {
+		r.Use(handler.AdminMiddleware)
 		r.Delete("/{userId}/{hash}", api.Delete)
 		r.Delete("/{userId}", api.DeleteByUsername)
 	})

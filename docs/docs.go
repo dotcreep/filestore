@@ -19,6 +19,111 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/admin/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "X-API-Key": []
+                    }
+                ],
+                "description": "Delete user file based on username",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Delete all file apk or aab and user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BadRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.InternalServerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/{id}/{hash}": {
+            "delete": {
+                "security": [
+                    {
+                        "X-API-Key": []
+                    }
+                ],
+                "description": "Delete file based on user id or username using hash",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "File"
+                ],
+                "summary": "Delete file apk or aab",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "hash",
+                        "name": "hash",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.BadRequest"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.InternalServerError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/list/{id}": {
             "get": {
                 "security": [
@@ -68,7 +173,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/upload/{username}": {
+        "/api/v1/upload/{id}": {
             "post": {
                 "security": [
                     {
@@ -89,8 +194,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "username",
-                        "name": "username",
+                        "description": "user id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -102,111 +207,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/api.RequestInput"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BadRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.InternalServerError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "X-API-Key": []
-                    }
-                ],
-                "description": "Delete user file based on username",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "File"
-                ],
-                "summary": "Delete all file apk or aab and user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.BadRequest"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.InternalServerError"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/{id}/{hash}": {
-            "delete": {
-                "security": [
-                    {
-                        "X-API-Key": []
-                    }
-                ],
-                "description": "Delete file based on user id or username using hash",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "File"
-                ],
-                "summary": "Delete file apk or aab",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "hash",
-                        "name": "hash",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -364,17 +364,25 @@ const docTemplate = `{
                                             "type": "integer",
                                             "example": 1
                                         },
+                                        "label_name": {
+                                            "type": "string",
+                                            "example": "Example Apps"
+                                        },
                                         "package_name": {
                                             "type": "string",
                                             "example": "id.co.example.username"
                                         },
                                         "upload_at": {
                                             "type": "string",
-                                            "example": "2025-01-27T22:40:37.773666331+07:00"
+                                            "example": "2025-01-27T19:44:25.467738468+07:00"
                                         },
                                         "url": {
                                             "type": "string",
                                             "example": "/username/hash"
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "example": "v1.0.0"
                                         }
                                     }
                                 }
@@ -394,6 +402,10 @@ const docTemplate = `{
                                             "type": "integer",
                                             "example": 1
                                         },
+                                        "label_name": {
+                                            "type": "string",
+                                            "example": "Example Apps"
+                                        },
                                         "package_name": {
                                             "type": "string",
                                             "example": "id.co.example.username"
@@ -405,6 +417,10 @@ const docTemplate = `{
                                         "url": {
                                             "type": "string",
                                             "example": "/username/hash"
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "example": "v1.0.0"
                                         }
                                     }
                                 }

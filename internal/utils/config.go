@@ -13,6 +13,7 @@ type YamlStruct struct {
 }
 
 type Config struct {
+	SuperUserKey      string `yaml:"super_user_key"`
 	SecretAccess      string `yaml:"secret_access"`
 	KeyAccessMetadata string `yaml:"key_access_metadata"`
 	Port              int    `yaml:"port"`

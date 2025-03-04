@@ -10,18 +10,18 @@ import (
 	"github.com/dotcreep/filestore/internal/utils"
 )
 
-//	@Summary		Delete file apk or aab
-//	@Description	Delete file based on user id or username using hash
-//	@Tags			File
-//	@Accept			json
-//	@Produce		json
-//	@Param			id		path	string	true	"user id"
-//	@Param			hash	path	string	true	"hash"
-//	@Security		X-API-Key
-//	@Success		200	{object}	utils.Success				"Success"
-//	@Failure		400	{object}	utils.BadRequest			"Bad request"
-//	@Failure		500	{object}	utils.InternalServerError	"Internal server error"
-//	@Router			/api/v1/{id}/{hash} [delete]
+// @Summary		Delete file apk or aab
+// @Description	Delete file based on user id or username using hash
+// @Tags			File
+// @Accept			json
+// @Produce		json
+// @Param			id		path	string	true	"user id"
+// @Param			hash	path	string	true	"hash"
+// @Security		X-API-Key
+// @Success		200	{object}	utils.Success				"Success"
+// @Failure		400	{object}	utils.BadRequest			"Bad request"
+// @Failure		500	{object}	utils.InternalServerError	"Internal server error"
+// @Router			/api/v1/admin/{id}/{hash} [delete]
 func Delete(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
 	cfg, err := utils.OpenYAML()

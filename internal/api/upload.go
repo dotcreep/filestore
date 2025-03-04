@@ -27,13 +27,13 @@ type RequestInput struct {
 // @Tags			File
 // @Accept			json
 // @Produce		json
-// @Param			username	path	string	true	"username"
+// @Param			id	path	string	true	"user id"
 // @Security		X-API-Key
 // @Param			body	body		RequestInput				true	"Body"
 // @Success		200		{object}	utils.Success				"Success"
 // @Failure		400		{object}	utils.BadRequest			"Bad request"
 // @Failure		500		{object}	utils.InternalServerError	"Internal server error"
-// @Router			/api/v1/upload/{username} [post]
+// @Router			/api/v1/upload/{id} [post]
 func Upload(w http.ResponseWriter, r *http.Request) {
 	Json := utils.Json{}
 	cfg, err := utils.OpenYAML()

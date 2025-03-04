@@ -29,7 +29,9 @@ type Showfile struct {
 				Index       int    `json:"index" example:"1"`
 				Filename    string `json:"filename" example:"file.aab"`
 				URL         string `json:"url" example:"/username/hash"`
-				UploadAt    string `json:"upload_at" example:"2025-01-27T22:40:37.773666331+07:00"`
+				UploadAt    string `json:"upload_at" example:"2025-01-27T19:44:25.467738468+07:00"`
+				LabelName   string `json:"label_name" example:"Example Apps"`
+				Version     string `json:"version" example:"v1.0.0"`
 				PackageName string `json:"package_name" example:"id.co.example.username"`
 			} `json:"hash.aab"`
 		} `json:"aab"`
@@ -39,6 +41,8 @@ type Showfile struct {
 				Filename    string `json:"filename" example:"file.apk"`
 				URL         string `json:"url" example:"/username/hash"`
 				UploadAt    string `json:"upload_at" example:"2025-01-27T19:44:25.467738468+07:00"`
+				LabelName   string `json:"label_name" example:"Example Apps"`
+				Version     string `json:"version" example:"v1.0.0"`
 				PackageName string `json:"package_name" example:"id.co.example.username"`
 			} `json:"hash.apk"`
 		} `json:"apk"`
@@ -46,4 +50,13 @@ type Showfile struct {
 	Message string `json:"message" example:"message"`
 	Status  int    `json:"status" example:"200"`
 	Error   string `json:"error" example:"null"`
+}
+type FileData struct {
+	Index       int    `json:"index" example:"1"`
+	Filename    string `json:"filename" example:"file.apk"`
+	URL         string `json:"url" example:"/username/hash"`
+	UploadAt    string `json:"upload_at" example:"2025-01-27T19:44:25.467738468+07:00"`
+	LabelName   string `json:"label_name" example:"Example Apps"`
+	Version     string `json:"version" example:"v1.0.0"`
+	PackageName string `json:"package_name" example:"id.co.example.username"`
 }

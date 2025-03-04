@@ -76,14 +76,20 @@ definitions:
                   index:
                     example: 1
                     type: integer
+                  label_name:
+                    example: Example Apps
+                    type: string
                   package_name:
                     example: id.co.example.username
                     type: string
                   upload_at:
-                    example: "2025-01-27T22:40:37.773666331+07:00"
+                    example: "2025-01-27T19:44:25.467738468+07:00"
                     type: string
                   url:
                     example: /username/hash
+                    type: string
+                  version:
+                    example: v1.0.0
                     type: string
                 type: object
             type: object
@@ -97,6 +103,9 @@ definitions:
                   index:
                     example: 1
                     type: integer
+                  label_name:
+                    example: Example Apps
+                    type: string
                   package_name:
                     example: id.co.example.username
                     type: string
@@ -105,6 +114,9 @@ definitions:
                     type: string
                   url:
                     example: /username/hash
+                    type: string
+                  version:
+                    example: v1.0.0
                     type: string
                 type: object
             type: object
@@ -143,7 +155,7 @@ info:
   title: Filestore
   version: "1.0"
 paths:
-  /api/v1/{id}:
+  /api/v1/admin/{id}:
     delete:
       consumes:
       - application/json
@@ -174,7 +186,7 @@ paths:
       summary: Delete all file apk or aab and user
       tags:
       - File
-  /api/v1/{id}/{hash}:
+  /api/v1/admin/{id}/{hash}:
     delete:
       consumes:
       - application/json
@@ -241,15 +253,15 @@ paths:
       summary: Show file from user
       tags:
       - File
-  /api/v1/upload/{username}:
+  /api/v1/upload/{id}:
     post:
       consumes:
       - application/json
       description: Upload file based on user id or username
       parameters:
-      - description: username
+      - description: user id
         in: path
-        name: username
+        name: id
         required: true
         type: string
       - description: Body
